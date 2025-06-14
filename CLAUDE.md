@@ -11,23 +11,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bun run lint` - Run ESLint
 
 ### Package Management
-~~This project uses npm with `pnpm-lock.yaml` present, suggesting pnpm might be preferred for dependency management.~~
-- Use Bun instead of npm for package management
+This project uses bun as the preferred package manager. Supabase packages are managed through bun.
 
 ## Architecture Overview
 
 ### Core Application Structure
-This is a Next.js 15 student ID card management system with the following key components:
+This is a Next.js 15 student ID card management system with Supabase integration:
 
 - **Main Flow**: Home page → Student Form → ID Card Preview → Database Save
 - **State Management**: React state for form data and UI flow control
-- **Data Storage**: Currently uses in-memory storage in API route (demo mode)
+- **Data Storage**: Supabase PostgreSQL database with direct frontend connection
+- **Authentication**: Middleware ready for future auth implementation
 
 ### Key Components
 - `app/page.tsx` - Main application orchestration with multi-step workflow
 - `components/student-form.tsx` - Form for collecting student information
 - `components/id-card-preview.tsx` - Visual ID card display component
-- `app/api/students/route.ts` - RESTful API endpoint for student data
+- `lib/supabase/` - Supabase client utilities and type definitions
+- `middleware.ts` - Auth token refresh and session management
 
 ### Data Model
 The `StudentData` interface (defined in `app/page.tsx`) represents the core data structure:
@@ -41,8 +42,11 @@ The `StudentData` interface (defined in `app/page.tsx`) represents the core data
 - **Responsive**: Mobile-first design with `useIsMobile` hook
 - **Notifications**: Sonner toast system available
 
-### Database Schema
-`scripts/create-students-table.sql` contains the intended database schema for production use. Currently the API uses in-memory storage for demo purposes.
+### Database Integration
+- **Supabase Integration**: Direct frontend-to-database connection using Supabase client
+- **Schema**: PostgreSQL table with proper indexes and constraints
+- **Setup Guide**: See `docs/SUPABASE_SETUP.md` for complete setup instructions
+- **Type Safety**: TypeScript interfaces for database operations in `lib/supabase/types.ts`
 
 ## Technical Configuration
 
@@ -65,10 +69,10 @@ The `StudentData` interface (defined in `app/page.tsx`) represents the core data
 ## Development Notes
 
 ### Current Limitations
-- In-memory storage only (no persistent database)
-- No authentication or user management
+- No authentication system (middleware ready for implementation)
 - No file upload for student photos
 - No print functionality for ID cards
+- No advanced search/filtering capabilities
 
 ### Mobile Detection
 The codebase has duplicate `useIsMobile` hooks in both `hooks/` and `components/ui/`. Use the one in `hooks/` directory as the canonical version.

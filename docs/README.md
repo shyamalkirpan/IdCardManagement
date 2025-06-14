@@ -33,6 +33,14 @@ Database setup and integration guide:
 - Backup strategies and maintenance
 - Security considerations
 
+### 🔗 [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
+Supabase-specific setup guide:
+- Supabase project configuration
+- Database schema creation
+- Row Level Security (RLS) setup
+- Environment variable configuration
+- Frontend integration steps
+
 ### 🚀 [DEPLOYMENT.md](DEPLOYMENT.md)
 Production deployment options:
 - Platform-specific guides (Vercel, Netlify, AWS, GCP)
@@ -54,15 +62,16 @@ Complete development workflow guide:
 ### Technology Stack
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS, shadcn/ui components
-- **Backend**: Next.js API Routes
-- **Database**: SQL (MySQL/PostgreSQL) with current in-memory demo
+- **Backend**: Supabase (PostgreSQL with real-time capabilities)
+- **Database**: Direct frontend-to-Supabase connection
+- **Authentication**: Supabase Auth (middleware ready)
 - **Runtime**: Bun (recommended) or Node.js
 
 ### Application Flow
 ```
 Landing Page → Student Form → ID Card Preview → Database Save
      ↑              ↓              ↓              ↓
-   Home.tsx    StudentForm.tsx  IdCardPreview.tsx  API Route
+   Home.tsx    StudentForm.tsx  IdCardPreview.tsx  Supabase Client
 ```
 
 ### Key Features
@@ -100,12 +109,13 @@ When contributing to the project:
 
 ## Project Status
 
-### Current State (Demo)
+### Current State (Production Ready)
 - ✅ Complete UI/UX workflow
 - ✅ Form validation and preview
-- ✅ In-memory data storage
+- ✅ Supabase database integration
 - ✅ Responsive design
 - ✅ TypeScript implementation
+- ✅ Toast notifications
 
 ### Production Ready Features
 - ✅ Database schema designed

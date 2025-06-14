@@ -3,8 +3,11 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
 import StudentForm from "@/components/student-form"
 import IdCardPreview from "@/components/id-card-preview"
+import { createClient } from "@/lib/supabase/client"
+import { transformToDatabase, transformFromDatabase, type StudentFormData } from "@/lib/supabase/types"
 
 export interface StudentData {
   id?: string
@@ -37,24 +40,29 @@ export default function Home() {
     if (!studentData) return
 
     try {
-      const response = await fetch("/api/students", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(studentData),
-      })
+      const supabase = createClient()
+      const dbData = transformToDatabase(studentData as StudentFormData)
+      
+      const { data, error } = await supabase
+        .from('students')
+        .insert([dbData])
+        .select()
+        .single()
 
-      if (response.ok) {
-        const savedStudent = await response.json()
-        setStudentData(savedStudent)
-        alert("Student data saved successfully!")
-      } else {
-        alert("Failed to save student data")
+      if (error) {
+        console.error("Supabase error:", error)
+        toast.error("Failed to save student data: " + error.message)
+        return
+      }
+
+      if (data) {
+        const transformedData = transformFromDatabase(data)
+        setStudentData({ ...transformedData, id: data.id })
+        toast.success("Student data saved successfully!")
       }
     } catch (error) {
       console.error("Error saving student data:", error)
-      alert("Error saving student data")
+      toast.error("Error saving student data")
     }
   }
 
