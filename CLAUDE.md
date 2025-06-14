@@ -11,7 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bun run lint` - Run ESLint
 
 ### Package Management
-This project uses npm with `pnpm-lock.yaml` present, suggesting pnpm might be preferred for dependency management.
+~~This project uses npm with `pnpm-lock.yaml` present, suggesting pnpm might be preferred for dependency management.~~
+- Use Bun instead of npm for package management
 
 ## Architecture Overview
 
