@@ -10,6 +10,7 @@ export interface StudentData {
   blood_group: string
   contact_no: string
   address: string
+  photo_url?: string
   created_at?: string
   updated_at?: string
 }
@@ -27,6 +28,7 @@ export interface StudentFormData {
   bloodGroup: string
   contactNo: string
   address: string
+  photoUrl?: string
 }
 
 export const transformToDatabase = (formData: StudentFormData): Omit<StudentData, 'id' | 'created_at' | 'updated_at'> => ({
@@ -40,6 +42,7 @@ export const transformToDatabase = (formData: StudentFormData): Omit<StudentData
   blood_group: formData.bloodGroup,
   contact_no: formData.contactNo,
   address: formData.address,
+  photo_url: formData.photoUrl,
 })
 
 export const transformFromDatabase = (dbData: StudentData): StudentFormData => ({
@@ -55,4 +58,5 @@ export const transformFromDatabase = (dbData: StudentData): StudentFormData => (
   bloodGroup: dbData.blood_group,
   contactNo: dbData.contact_no,
   address: dbData.address,
+  photoUrl: dbData.photo_url,
 })

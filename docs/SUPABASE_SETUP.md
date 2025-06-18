@@ -130,12 +130,43 @@ const subscription = supabase
   .subscribe()
 ```
 
-### Storage (For Future Photo Uploads)
+### Storage (For Student Photo Uploads)
 To enable file storage for student photos:
 
 1. Go to Storage in Supabase dashboard
-2. Create a bucket named `student-photos`
-3. Set appropriate policies for the bucket
+2. Create a bucket named `student-photos` with public access enabled
+3. Set appropriate policies for the bucket:
+
+```sql
+-- Allow public read access to photos
+CREATE POLICY "Public read access for student photos" 
+ON storage.objects FOR SELECT 
+USING (bucket_id = 'student-photos');
+
+-- Allow public upload of photos (for demo purposes)
+CREATE POLICY "Public upload access for student photos" 
+ON storage.objects FOR INSERT 
+WITH CHECK (bucket_id = 'student-photos');
+
+-- Allow public update of photos (for demo purposes)
+CREATE POLICY "Public update access for student photos" 
+ON storage.objects FOR UPDATE 
+USING (bucket_id = 'student-photos');
+
+-- Allow public delete of photos (for demo purposes)
+CREATE POLICY "Public delete access for student photos" 
+ON storage.objects FOR DELETE 
+USING (bucket_id = 'student-photos');
+```
+
+4. Run the photo column migration script:
+
+```sql
+-- Add photo_url column to existing students table
+ALTER TABLE students ADD COLUMN photo_url TEXT;
+```
+
+Or use the provided migration script at `scripts/add-photo-column.sql`
 
 ### Authentication (For Future Admin Features)
 To add authentication:

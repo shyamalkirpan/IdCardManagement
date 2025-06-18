@@ -53,6 +53,7 @@
     "react-day-picker": "8.10.1",
     "react-dom": "^19",
     "react-hook-form": "^7.54.1",
+    "react-image-crop": "^11.0.10",
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",
@@ -65,6 +66,8 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9.29.0",
+    "eslint-config-next": "^15.3.3",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"

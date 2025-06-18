@@ -23,6 +23,7 @@ export interface StudentData {
   bloodGroup: string
   contactNo: string
   address: string
+  photoUrl?: string
 }
 
 export default function Home() {

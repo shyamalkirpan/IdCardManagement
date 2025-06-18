@@ -17,8 +17,16 @@ export default function IdCardPreview({ studentData }: IdCardPreviewProps) {
           {/* Header */}
           <div className="text-center mb-6">
             <h2 className="text-xl font-bold">STUDENT ID CARD</h2>
-            <div className="w-16 h-16 bg-white rounded-full mx-auto mt-3 flex items-center justify-center">
-              <span className="text-2xl text-blue-600 font-bold">{studentData.name.charAt(0).toUpperCase()}</span>
+            <div className="w-16 h-16 bg-white rounded-full mx-auto mt-3 flex items-center justify-center overflow-hidden">
+              {studentData.photoUrl ? (
+                <img 
+                  src={studentData.photoUrl} 
+                  alt={studentData.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-2xl text-blue-600 font-bold">{studentData.name.charAt(0).toUpperCase()}</span>
+              )}
             </div>
           </div>
 

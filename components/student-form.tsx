@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
+import PhotoUpload from "@/components/photo-upload"
 import type { StudentData } from "@/app/page"
 
 interface StudentFormProps {
@@ -32,6 +33,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
     bloodGroup: initialData?.bloodGroup || "",
     contactNo: initialData?.contactNo || "",
     address: initialData?.address || "",
+    photoUrl: initialData?.photoUrl || "",
   })
 
   const [accepted, setAccepted] = useState(false)
@@ -63,6 +65,12 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              <PhotoUpload
+                photoUrl={formData.photoUrl}
+                onPhotoChange={(photoUrl) => setFormData({ ...formData, photoUrl: photoUrl || "" })}
+                studentId={initialData?.id || formData.admissionNo}
+              />
+
               <div className="space-y-2">
                 <Label htmlFor="name">Name *</Label>
                 <Input
