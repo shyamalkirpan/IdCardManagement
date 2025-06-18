@@ -44,22 +44,34 @@ export default function Home() {
       const supabase = createClient()
       const dbData = transformToDatabase(studentData as StudentFormData)
       
-      const { data, error } = await supabase
-        .from('students')
-        .insert([dbData])
-        .select()
-        .single()
-
-      if (error) {
-        console.error("Supabase error:", error)
-        toast.error("Failed to save student data: " + error.message)
-        return
+      let result
+      if (studentData.id) {
+        // Update existing record
+        const { data, error } = await supabase
+          .from('students')
+          .update(dbData)
+          .eq('id', studentData.id)
+          .select()
+          .single()
+        
+        if (error) throw error
+        result = data
+      } else {
+        // Insert new record
+        const { data, error } = await supabase
+          .from('students')
+          .insert([dbData])
+          .select()
+          .single()
+        
+        if (error) throw error
+        result = data
       }
 
-      if (data) {
-        const transformedData = transformFromDatabase(data)
-        setStudentData({ ...transformedData, id: data.id })
-        toast.success("Student data saved successfully!")
+      if (result) {
+        const transformedData = transformFromDatabase(result)
+        setStudentData({ ...transformedData, id: result.id })
+        toast.success(studentData.id ? "Student data updated successfully!" : "Student data saved successfully!")
       }
     } catch (error) {
       console.error("Error saving student data:", error)

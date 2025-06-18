@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Upload, X, User, Crop } from "lucide-react"
 import ImageCropper from "./image-cropper"
 import { uploadStudentPhoto } from "@/lib/supabase/storage"
+import { createClient } from "@/lib/supabase/client"
 
 interface PhotoUploadProps {
   photoUrl?: string
@@ -61,6 +62,23 @@ export default function PhotoUpload({ photoUrl, onPhotoChange, disabled, student
       const uploadedUrl = await uploadStudentPhoto(file, studentId || 'temp')
       
       if (uploadedUrl) {
+        // If we have an existing photo URL and it's not the same as the new one,
+        // we should delete the old photo
+        if (photoUrl && photoUrl !== uploadedUrl) {
+          try {
+            const supabase = createClient()
+            const oldPhotoPath = photoUrl.split('/').pop()
+            if (oldPhotoPath) {
+              await supabase.storage
+                .from('student-photos')
+                .remove([oldPhotoPath])
+            }
+          } catch (error) {
+            console.error("Error deleting old photo:", error)
+            // Continue even if old photo deletion fails
+          }
+        }
+
         setPreviewUrl(uploadedUrl)
         onPhotoChange(uploadedUrl)
         toast.success("Photo uploaded successfully!")
@@ -75,7 +93,22 @@ export default function PhotoUpload({ photoUrl, onPhotoChange, disabled, student
     }
   }
 
-  const handleRemovePhoto = () => {
+  const handleRemovePhoto = async () => {
+    if (photoUrl) {
+      try {
+        const supabase = createClient()
+        const photoPath = photoUrl.split('/').pop()
+        if (photoPath) {
+          await supabase.storage
+            .from('student-photos')
+            .remove([photoPath])
+        }
+      } catch (error) {
+        console.error("Error deleting photo:", error)
+        // Continue even if photo deletion fails
+      }
+    }
+    
     setPreviewUrl(null)
     setOriginalImageUrl(null)
     onPhotoChange(null)

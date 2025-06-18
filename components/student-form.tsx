@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -34,9 +34,28 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
     contactNo: initialData?.contactNo || "",
     address: initialData?.address || "",
     photoUrl: initialData?.photoUrl || "",
+    id: initialData?.id,
   })
 
   const [accepted, setAccepted] = useState(false)
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name,
+        class: initialData.class,
+        section: initialData.section,
+        dateOfBirth: initialData.dateOfBirth,
+        admissionNo: initialData.admissionNo,
+        bloodGroup: initialData.bloodGroup,
+        contactNo: initialData.contactNo,
+        address: initialData.address,
+        photoUrl: initialData.photoUrl,
+        id: initialData.id,
+      })
+      setAccepted(true)
+    }
+  }, [initialData])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
