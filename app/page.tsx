@@ -123,9 +123,17 @@ export default function Home() {
           <CardTitle className="text-2xl font-bold text-gray-800">Student ID Card System</CardTitle>
           <CardDescription>Create and manage student identification cards</CardDescription>
         </CardHeader>
-        <CardContent className="text-center">
+        <CardContent className="text-center space-y-4">
           <Button onClick={() => setShowForm(true)} size="lg" className="w-full bg-blue-600 hover:bg-blue-700">
             Create New Student ID
+          </Button>
+          <Button 
+            onClick={() => window.location.href = '/dashboard'} 
+            variant="outline" 
+            size="lg" 
+            className="w-full"
+          >
+            View All Records
           </Button>
         </CardContent>
       </Card>
