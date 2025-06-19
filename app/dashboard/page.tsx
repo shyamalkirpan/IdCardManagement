@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/table"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
-import { transformFromDatabase, transformToDatabase, type StudentFormData } from "@/lib/supabase/types"
-import type { StudentData } from "@/app/page"
+import { transformFromDatabase, transformToDatabase, type DatabaseStudentData } from "@/lib/supabase/types"
+import type { StudentData } from "@/lib/form-schemas"
 import StudentForm from "@/components/student-form"
 import IdCardPreview from "@/components/id-card-preview"
 import { Eye, Pencil, Trash2, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
@@ -96,7 +96,7 @@ export default function Dashboard() {
   const handleFormSubmit = async (data: StudentData) => {
     try {
       const supabase = createClient()
-      const dbData = transformToDatabase(data as StudentFormData)
+      const dbData = transformToDatabase(data)
       
       let result
       if (data.id) {

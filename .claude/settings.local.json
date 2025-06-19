@@ -6,7 +6,8 @@
       "Bash(rm:*)",
       "Bash(bun run lint:*)",
       "Bash(bun run:*)",
-      "WebFetch(domain:tanstack.com)"
+      "WebFetch(domain:tanstack.com)",
+      "Bash(bun install:*)"
     ],
     "deny": []
   }

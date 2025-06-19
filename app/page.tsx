@@ -1,40 +1,35 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import StudentForm from "@/components/student-form"
 import IdCardPreview from "@/components/id-card-preview"
 import { createClient } from "@/lib/supabase/client"
-import { transformToDatabase, transformFromDatabase, type StudentFormData } from "@/lib/supabase/types"
+import { transformToDatabase, transformFromDatabase } from "@/lib/supabase/types"
+import type { StudentData } from "@/lib/form-schemas"
 
-export interface StudentData {
-  id?: string
-  name: string
-  class: string
-  section: string
-  dateOfBirth: {
-    day: string
-    month: string
-    year: string
-  }
-  admissionNo: string
-  bloodGroup: string
-  contactNo: string
-  address: string
-  photoUrl?: string
-}
-
-export default function Home() {
+function HomeContent() {
   const [showForm, setShowForm] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [studentData, setStudentData] = useState<StudentData | null>(null)
+  const searchParams = useSearchParams()
+
+  // Check for create parameter from navbar
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setShowForm(true)
+      // Clear the search param without causing a page refresh
+      window.history.replaceState({}, '', '/')
+    }
+  }, [searchParams])
 
   const handleFormSubmit = async (data: StudentData) => {
     try {
       const supabase = createClient()
-      const dbData = transformToDatabase(data as StudentFormData)
+      const dbData = transformToDatabase(data)
       
       let result
       if (data.id) {
@@ -129,5 +124,13 @@ export default function Home() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   )
 }

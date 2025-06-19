@@ -131,10 +131,9 @@ export default function PhotoUpload({ photoUrl, onPhotoChange, disabled, student
 
   return (
     <div className="space-y-2">
-      <Label>Student Photo</Label>
-      <div className="flex flex-col items-center space-y-4">
+      <div className="flex flex-col items-center space-y-4 w-full">
         {/* Photo Preview */}
-        <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden">
+        <div className="w-32 h-40 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden">
           {previewUrl ? (
             <div className="relative w-full h-full">
               <img 

@@ -1,4 +1,8 @@
-export interface StudentData {
+import type { StudentData } from "../form-schemas"
+import { formatDateToComponents, isDateObject, isDateComponents } from "../form-schemas"
+
+// Database-specific interface (matches Supabase table structure)
+export interface DatabaseStudentData {
   id?: string
   name: string
   class: string
@@ -15,48 +19,50 @@ export interface StudentData {
   updated_at?: string
 }
 
-export interface StudentFormData {
-  name: string
-  class: string
-  section: string
-  dateOfBirth: {
-    day: string
-    month: string
-    year: string
+export const transformToDatabase = (formData: StudentData): Omit<DatabaseStudentData, 'id' | 'created_at' | 'updated_at'> => {
+  // Handle both Date objects and legacy string components
+  let dateComponents: { day: string; month: string; year: string }
+  
+  if (isDateObject(formData.dateOfBirth)) {
+    dateComponents = formatDateToComponents(formData.dateOfBirth)
+  } else if (isDateComponents(formData.dateOfBirth)) {
+    dateComponents = formData.dateOfBirth
+  } else {
+    dateComponents = { day: "", month: "", year: "" }
   }
-  admissionNo: string
-  bloodGroup: string
-  contactNo: string
-  address: string
-  photoUrl?: string
+  
+  return {
+    name: formData.name,
+    class: formData.class,
+    section: formData.section,
+    date_of_birth_day: dateComponents.day,
+    date_of_birth_month: dateComponents.month,
+    date_of_birth_year: dateComponents.year,
+    admission_no: formData.admissionNo,
+    blood_group: formData.bloodGroup,
+    contact_no: formData.contactNo,
+    address: formData.address,
+    photo_url: formData.photoUrl,
+  }
 }
 
-export const transformToDatabase = (formData: StudentFormData): Omit<StudentData, 'id' | 'created_at' | 'updated_at'> => ({
-  name: formData.name,
-  class: formData.class,
-  section: formData.section,
-  date_of_birth_day: formData.dateOfBirth.day,
-  date_of_birth_month: formData.dateOfBirth.month,
-  date_of_birth_year: formData.dateOfBirth.year,
-  admission_no: formData.admissionNo,
-  blood_group: formData.bloodGroup,
-  contact_no: formData.contactNo,
-  address: formData.address,
-  photo_url: formData.photoUrl,
-})
-
-export const transformFromDatabase = (dbData: StudentData): StudentFormData => ({
-  name: dbData.name,
-  class: dbData.class,
-  section: dbData.section,
-  dateOfBirth: {
-    day: dbData.date_of_birth_day,
-    month: dbData.date_of_birth_month,
-    year: dbData.date_of_birth_year,
-  },
-  admissionNo: dbData.admission_no,
-  bloodGroup: dbData.blood_group,
-  contactNo: dbData.contact_no,
-  address: dbData.address,
-  photoUrl: dbData.photo_url,
-})
+export const transformFromDatabase = (dbData: DatabaseStudentData): StudentData => {
+  // Return string components for backward compatibility
+  // The form will handle conversion to Date object internally
+  return {
+    id: dbData.id,
+    name: dbData.name,
+    class: dbData.class,
+    section: dbData.section,
+    dateOfBirth: {
+      day: dbData.date_of_birth_day || "",
+      month: dbData.date_of_birth_month || "",
+      year: dbData.date_of_birth_year || "",
+    },
+    admissionNo: dbData.admission_no,
+    bloodGroup: dbData.blood_group,
+    contactNo: dbData.contact_no,
+    address: dbData.address,
+    photoUrl: dbData.photo_url,
+  }
+}
