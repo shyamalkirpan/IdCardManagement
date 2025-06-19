@@ -12,9 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
+import { DatePicker } from "@/components/date-picker"
 import PhotoUpload from "@/components/photo-upload"
 import { 
   studentFormSchema, 
@@ -38,7 +36,6 @@ interface StudentFormProps {
 
 export default function StudentForm({ onSubmit, onCancel, initialData }: StudentFormProps) {
   const [accepted, setAccepted] = useState(!!initialData)
-  const [calendarOpen, setCalendarOpen] = useState(false)
 
   // No longer need years array for Calendar component
 
@@ -224,42 +221,14 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                 {(field) => (
                   <div className="space-y-2">
                     <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          id="dateOfBirth"
-                          className="w-full justify-between font-normal bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                          aria-invalid={field.state.meta.errors.length > 0}
-                          aria-describedby={field.state.meta.errors.length > 0 ? "dateOfBirth-error" : undefined}
-                        >
-                          {field.state.value 
-                            ? field.state.value.toLocaleDateString('en-IN', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric'
-                              })
-                            : "Select date of birth"
-                          }
-                          <CalendarIcon className="h-4 w-4" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.state.value || undefined}
-                          onSelect={(date) => {
-                            field.handleChange(date || null)
-                            setCalendarOpen(false)
-                          }}
-                          captionLayout="dropdown"
-                          fromYear={1950}
-                          toYear={new Date().getFullYear()}
-                          defaultMonth={field.state.value || new Date(2010, 0)}
-                          className="rounded-lg border shadow-sm"
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <DatePicker
+                      id="dateOfBirth"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      placeholder="Select date of birth"
+                      aria-invalid={field.state.meta.errors.length > 0}
+                      aria-describedby={field.state.meta.errors.length > 0 ? "dateOfBirth-error" : undefined}
+                    />
                     {field.state.meta.errors.length > 0 && (
                       <p className="text-sm text-red-600" role="alert" aria-live="polite" id="dateOfBirth-error">
                         {typeof field.state.meta.errors[0] === 'string' 
