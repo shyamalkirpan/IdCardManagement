@@ -14,11 +14,14 @@ import {
 } from "@/components/ui/table"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
-import { transformFromDatabase, type StudentFormData } from "@/lib/supabase/types"
+import { transformFromDatabase, transformToDatabase, type StudentFormData } from "@/lib/supabase/types"
 import type { StudentData } from "@/app/page"
 import StudentForm from "@/components/student-form"
 import IdCardPreview from "@/components/id-card-preview"
-import { Eye, Pencil, Trash2, Search } from "lucide-react"
+import { Eye, Pencil, Trash2, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
+
+type SortField = 'name' | 'admissionNo' | 'class' | 'section' | 'contactNo'
+type SortOrder = 'asc' | 'desc'
 
 export default function Dashboard() {
   const [students, setStudents] = useState<StudentData[]>([])
@@ -27,6 +30,8 @@ export default function Dashboard() {
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [sortField, setSortField] = useState<SortField>('name')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
 
   // Fetch students on component mount
   useEffect(() => {
@@ -88,18 +93,89 @@ export default function Dashboard() {
     setShowPreview(true)
   }
 
-  const handleFormSubmit = (data: StudentData) => {
-    setSelectedStudent(data)
-    setShowForm(false)
-    setShowPreview(true)
+  const handleFormSubmit = async (data: StudentData) => {
+    try {
+      const supabase = createClient()
+      const dbData = transformToDatabase(data as StudentFormData)
+      
+      let result
+      if (data.id) {
+        // Update existing record
+        const { data: updatedData, error } = await supabase
+          .from('students')
+          .update(dbData)
+          .eq('id', data.id)
+          .select()
+          .single()
+        
+        if (error) throw error
+        result = updatedData
+      } else {
+        // Insert new record
+        const { data: newData, error } = await supabase
+          .from('students')
+          .insert([dbData])
+          .select()
+          .single()
+        
+        if (error) throw error
+        result = newData
+      }
+
+      if (result) {
+        const transformedData = transformFromDatabase(result)
+        setSelectedStudent({ ...transformedData, id: result.id })
+        setShowForm(false)
+        setShowPreview(true)
+        toast.success(data.id ? "Student information updated successfully!" : "Student information saved successfully!")
+        fetchStudents() // Refresh the list
+      }
+    } catch (error) {
+      console.error("Error saving student data:", error)
+      toast.error("Error saving student information")
+    }
   }
 
-  const filteredStudents = students.filter(student => 
-    student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.admissionNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.class.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.section.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortOrder('asc')
+    }
+  }
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown className="h-4 w-4" />
+    return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+  }
+
+  const filteredStudents = students
+    .filter(student => 
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.admissionNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.class.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.section.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      const aValue = a[sortField]
+      const bValue = b[sortField]
+      
+      if (sortField === 'class') {
+        // Special handling for class sorting (1st, 2nd, etc.)
+        const aNum = parseInt(aValue)
+        const bNum = parseInt(bValue)
+        return sortOrder === 'asc' ? aNum - bNum : bNum - aNum
+      }
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortOrder === 'asc' 
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue)
+      }
+      
+      return 0
+    })
 
   if (showForm) {
     return (
@@ -117,7 +193,7 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Student ID Card Preview</h1>
-            <p className="text-gray-600">Review the information and save to database</p>
+            <p className="text-gray-600">Student information has been saved</p>
           </div>
 
           <IdCardPreview studentData={selectedStudent} />
@@ -174,11 +250,51 @@ export default function Dashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Photo</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Admission No</TableHead>
-                      <TableHead>Class</TableHead>
-                      <TableHead>Section</TableHead>
-                      <TableHead>Contact</TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort('name')}
+                          className="flex items-center gap-1"
+                        >
+                          Name {getSortIcon('name')}
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort('admissionNo')}
+                          className="flex items-center gap-1"
+                        >
+                          Admission No {getSortIcon('admissionNo')}
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort('class')}
+                          className="flex items-center gap-1"
+                        >
+                          Class {getSortIcon('class')}
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort('section')}
+                          className="flex items-center gap-1"
+                        >
+                          Section {getSortIcon('section')}
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort('contactNo')}
+                          className="flex items-center gap-1"
+                        >
+                          Contact {getSortIcon('contactNo')}
+                        </Button>
+                      </TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>

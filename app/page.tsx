@@ -31,51 +31,45 @@ export default function Home() {
   const [showPreview, setShowPreview] = useState(false)
   const [studentData, setStudentData] = useState<StudentData | null>(null)
 
-  const handleFormSubmit = (data: StudentData) => {
-    setStudentData(data)
-    setShowForm(false)
-    setShowPreview(true)
-  }
-
-  const handleSaveToDatabase = async () => {
-    if (!studentData) return
-
+  const handleFormSubmit = async (data: StudentData) => {
     try {
       const supabase = createClient()
-      const dbData = transformToDatabase(studentData as StudentFormData)
+      const dbData = transformToDatabase(data as StudentFormData)
       
       let result
-      if (studentData.id) {
+      if (data.id) {
         // Update existing record
-        const { data, error } = await supabase
+        const { data: updatedData, error } = await supabase
           .from('students')
           .update(dbData)
-          .eq('id', studentData.id)
+          .eq('id', data.id)
           .select()
           .single()
         
         if (error) throw error
-        result = data
+        result = updatedData
       } else {
         // Insert new record
-        const { data, error } = await supabase
+        const { data: newData, error } = await supabase
           .from('students')
           .insert([dbData])
           .select()
           .single()
         
         if (error) throw error
-        result = data
+        result = newData
       }
 
       if (result) {
         const transformedData = transformFromDatabase(result)
         setStudentData({ ...transformedData, id: result.id })
-        toast.success(studentData.id ? "Student data updated successfully!" : "Student data saved successfully!")
+        setShowForm(false)
+        setShowPreview(true)
+        toast.success(data.id ? "Student information updated successfully!" : "Student information saved successfully!")
       }
     } catch (error) {
       console.error("Error saving student data:", error)
-      toast.error("Error saving student data")
+      toast.error("Error saving student information")
     }
   }
 
@@ -91,7 +85,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Student ID Card Preview</h1>
-            <p className="text-gray-600">Review the information and save to database</p>
+            <p className="text-gray-600">Student information has been saved</p>
           </div>
 
           <IdCardPreview studentData={studentData} />
@@ -100,11 +94,8 @@ export default function Home() {
             <Button variant="outline" onClick={() => setShowForm(true)}>
               Edit Information
             </Button>
-            <Button onClick={handleSaveToDatabase} className="bg-green-600 hover:bg-green-700">
-              Save to Database
-            </Button>
-            <Button variant="outline" onClick={handleReset}>
-              Start Over
+            <Button onClick={handleReset} className="bg-blue-600 hover:bg-blue-700">
+              Create New ID Card
             </Button>
           </div>
         </div>

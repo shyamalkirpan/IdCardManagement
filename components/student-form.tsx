@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -75,12 +75,12 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
   const years = Array.from({ length: 50 }, (_, i) => String(2024 - i))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Card>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
+      <div className="w-full max-w-xl">
+        <Card className="shadow-lg border-0">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-purple-700">Demo</CardTitle>
-            <p className="text-pink-600 font-medium">Please Fill the Relevent Information Carefully</p>
+            <CardTitle className="text-2xl font-bold text-gray-800">Student Information Form</CardTitle>
+            <CardDescription className="text-gray-600">Please fill the relevant information carefully</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -98,13 +98,14 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
+                  className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="class">Class</Label>
                 <Select value={formData.class} onValueChange={(value) => setFormData({ ...formData, class: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500">
                     <SelectValue placeholder="Select Class" />
                   </SelectTrigger>
                   <SelectContent>
@@ -123,7 +124,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                   value={formData.section}
                   onValueChange={(value) => setFormData({ ...formData, section: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500">
                     <SelectValue placeholder="Select Section" />
                   </SelectTrigger>
                   <SelectContent>
@@ -137,7 +138,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
               </div>
 
               <div className="space-y-2">
-                <Label>Date_of_Birth *</Label>
+                <Label>Date of Birth *</Label>
                 <div className="flex gap-2">
                   <Select
                     value={formData.dateOfBirth.day}
@@ -148,7 +149,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                       })
                     }
                   >
-                    <SelectTrigger className="w-20">
+                    <SelectTrigger className="w-20 bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500">
                       <SelectValue placeholder="DD" />
                     </SelectTrigger>
                     <SelectContent>
@@ -169,7 +170,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                       })
                     }
                   >
-                    <SelectTrigger className="w-20">
+                    <SelectTrigger className="w-20 bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500">
                       <SelectValue placeholder="MM" />
                     </SelectTrigger>
                     <SelectContent>
@@ -190,7 +191,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                       })
                     }
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="w-24 bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500">
                       <SelectValue placeholder="YY" />
                     </SelectTrigger>
                     <SelectContent>
@@ -205,13 +206,14 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="admissionNo">Admission_No *</Label>
+                <Label htmlFor="admissionNo">Admission No *</Label>
                 <Input
                   id="admissionNo"
                   placeholder="Type here ..."
                   value={formData.admissionNo}
                   onChange={(e) => setFormData({ ...formData, admissionNo: e.target.value })}
                   required
+                  className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -221,7 +223,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                   value={formData.bloodGroup}
                   onValueChange={(value) => setFormData({ ...formData, bloodGroup: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500">
                     <SelectValue placeholder="Select Blood Group" />
                   </SelectTrigger>
                   <SelectContent>
@@ -235,13 +237,14 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contactNo">Contact_No *</Label>
+                <Label htmlFor="contactNo">Contact No *</Label>
                 <Input
                   id="contactNo"
                   placeholder="Type here ..."
                   value={formData.contactNo}
                   onChange={(e) => setFormData({ ...formData, contactNo: e.target.value })}
                   required
+                  className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -253,6 +256,7 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
+                  className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -262,21 +266,13 @@ export default function StudentForm({ onSubmit, onCancel, initialData }: Student
                   checked={accepted}
                   onCheckedChange={(checked) => setAccepted(checked as boolean)}
                 />
-                <Label htmlFor="accept" className="text-sm">
+                <Label htmlFor="accept" className="text-sm text-gray-600">
                   I accept that the above information is true and correct
                 </Label>
               </div>
 
-              <div className="flex gap-4 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onCancel}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500"
-                >
-                  PREVIOUS
-                </Button>
-                <Button type="submit" className="bg-green-600 hover:bg-green-700">
+              <div className="flex justify-end pt-4">
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 w-full text-white font-semibold text-lg py-2 rounded-md shadow">
                   SUBMIT
                 </Button>
               </div>
