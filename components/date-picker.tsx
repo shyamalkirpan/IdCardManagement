@@ -24,6 +24,13 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
     const [selectedDay, setSelectedDay] = React.useState<string>("")
     const [selectedMonth, setSelectedMonth] = React.useState<string>("")
     const [selectedYear, setSelectedYear] = React.useState<string>("")
+    
+    // Use ref to store the current onChange to prevent infinite loops
+    const onChangeRef = React.useRef(onChange)
+    onChangeRef.current = onChange
+    
+    // Track if we're syncing from the value prop to prevent circular updates
+    const isSyncingFromValue = React.useRef(false)
 
     // Generate arrays for dropdowns
     const days = Array.from({ length: 31 }, (_, i) => {
@@ -54,19 +61,33 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
 
     // Sync state with value prop
     React.useEffect(() => {
+      isSyncingFromValue.current = true
+      
       if (value) {
-        setSelectedDay(value.getDate().toString().padStart(2, '0'))
-        setSelectedMonth((value.getMonth() + 1).toString().padStart(2, '0'))
-        setSelectedYear(value.getFullYear().toString())
+        const day = value.getDate().toString().padStart(2, '0')
+        const month = (value.getMonth() + 1).toString().padStart(2, '0')
+        const year = value.getFullYear().toString()
+        
+        setSelectedDay(day)
+        setSelectedMonth(month)
+        setSelectedYear(year)
       } else {
         setSelectedDay("")
         setSelectedMonth("")
         setSelectedYear("")
       }
+      
+      // Reset the flag on next tick to allow normal updates
+      setTimeout(() => {
+        isSyncingFromValue.current = false
+      }, 0)
     }, [value])
 
-    // Handle date selection
-    const handleDateChange = React.useCallback(() => {
+    // Auto-apply date when fields change
+    React.useEffect(() => {
+      // Skip if we're syncing from the value prop
+      if (isSyncingFromValue.current) return
+      
       if (selectedDay && selectedMonth && selectedYear) {
         const newDate = new Date(parseInt(selectedYear), parseInt(selectedMonth) - 1, parseInt(selectedDay))
         
@@ -76,17 +97,12 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
           newDate.getMonth() === parseInt(selectedMonth) - 1 &&
           newDate.getFullYear() === parseInt(selectedYear)
         ) {
-          onChange?.(newDate)
+          onChangeRef.current?.(newDate)
         }
       } else {
-        onChange?.(null)
+        onChangeRef.current?.(null)
       }
-    }, [selectedDay, selectedMonth, selectedYear, onChange])
-
-    // Auto-apply date when fields change
-    React.useEffect(() => {
-      handleDateChange()
-    }, [selectedDay, selectedMonth, selectedYear, handleDateChange])
+    }, [selectedDay, selectedMonth, selectedYear])
 
     return (
       <div ref={ref} className={`grid grid-cols-3 gap-2 ${className}`} {...props}>
