@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Toaster } from "@/components/ui/sonner"
 import Navbar from "@/components/navbar"
+import { AuthProvider } from '@/lib/auth/context'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -16,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Toaster />
+        <AuthProvider>
+          <Navbar />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   )

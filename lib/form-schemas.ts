@@ -111,7 +111,7 @@ export const studentFormSchema = z.object({
     .regex(/^[A-Za-z0-9\-/]+$/, "Admission number can only contain letters, numbers, hyphens, and forward slashes"),
   
   bloodGroup: z.string()
-    .optional()
+    .default("")
     .refine((val) => !val || BLOOD_GROUPS.includes(val as any), "Please select a valid blood group"),
   
   contactNo: z.string()
@@ -144,7 +144,7 @@ export interface StudentData {
     year: string
   }
   admissionNo: string
-  bloodGroup: string
+  bloodGroup?: string
   contactNo: string
   address: string
   photoUrl?: string

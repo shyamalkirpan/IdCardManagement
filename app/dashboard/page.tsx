@@ -16,6 +16,7 @@ import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { transformFromDatabase, transformToDatabase, type DatabaseStudentData } from "@/lib/supabase/types"
 import type { StudentData } from "@/lib/form-schemas"
+import { useAuth } from "@/lib/auth/context"
 import StudentForm from "@/components/student-form"
 import IdCardPreview from "@/components/id-card-preview"
 import { Eye, Pencil, Trash2, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
@@ -32,6 +33,7 @@ export default function Dashboard() {
   const [showPreview, setShowPreview] = useState(false)
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
+  const { user } = useAuth()
 
   // Fetch students on component mount
   useEffect(() => {
@@ -111,10 +113,10 @@ export default function Dashboard() {
         if (error) throw error
         result = updatedData
       } else {
-        // Insert new record
+        // Insert new record - include user_id for RLS
         const { data: newData, error } = await supabase
           .from('students')
-          .insert([dbData])
+          .insert([{ ...dbData, user_id: user?.id }])
           .select()
           .single()
         

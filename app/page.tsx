@@ -10,11 +10,13 @@ import IdCardPreview from "@/components/id-card-preview"
 import { createClient } from "@/lib/supabase/client"
 import { transformToDatabase, transformFromDatabase } from "@/lib/supabase/types"
 import type { StudentData } from "@/lib/form-schemas"
+import { useAuth } from "@/lib/auth/context"
 
 function HomeContent() {
   const [showForm, setShowForm] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [studentData, setStudentData] = useState<StudentData | null>(null)
+  const { user } = useAuth()
   const searchParams = useSearchParams()
 
   // Check for create parameter from navbar
@@ -44,10 +46,10 @@ function HomeContent() {
         if (error) throw error
         result = updatedData
       } else {
-        // Insert new record
+        // Insert new record - include user_id for RLS
         const { data: newData, error } = await supabase
           .from('students')
-          .insert([dbData])
+          .insert([{ ...dbData, user_id: user?.id }])
           .select()
           .single()
         

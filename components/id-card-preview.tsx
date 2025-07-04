@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import type { StudentData } from "@/app/page"
+import type { StudentData } from "@/lib/form-schemas"
 import { School, Calendar, Phone, MapPin, Droplet, Hash } from "lucide-react"
 
 interface IdCardPreviewProps {
